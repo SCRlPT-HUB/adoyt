@@ -1,0 +1,80 @@
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/SCRlPT-HUB/adoyt/refs/heads/main/spawn')))()
+local Window = OrionLib:MakeWindow({Name = "egorikys spawner", HidePremium = false, IntroEnabled = false})
+
+local Tab = Window:MakeTab({
+    Name = "Spawner",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+game:GetService("Players").LocalPlayer.PlayerGui.MainGUI.Inventory.NewItem.Enabled = true
+boxmodule = require(game:GetService("ReplicatedStorage").Modules.BoxModule)
+hi = getsenv(game:GetService("Players").LocalPlayer.PlayerGui.MainGUI.Inventory.NewItem)._G
+itemdatabase = require(game:GetService("ReplicatedStorage").Database.Sync.Item)
+
+function getrandombox()
+    local boxes = require(game:GetService("ReplicatedStorage").Database.Sync.MysteryBox)
+    if not boxes or next(boxes) == nil then
+        return nil
+    end
+    local keys = {}
+    for k,_ in pairs(boxes) do
+        table.insert(keys, k)
+    end
+    local randomIndex = math.random(1, #keys)
+    return keys[randomIndex]
+end
+
+function opencrate(ITEM_NAME)
+    print(ITEM_NAME)
+    boxmodule.OpenBox(getrandombox(), ITEM_NAME)
+    hi.NewItem(ITEM_NAME, nil, nil, 'Weapons', 1)
+end
+
+function getrawnamebyrealname(realname)
+    for i,v in pairs(itemdatabase) do
+        if realname == i then
+            return i
+        end
+    end
+end
+
+function gettable(uu)
+    almaz = {}
+    for i,v in pairs(itemdatabase) do
+        if string.find(i:lower(), uu:lower()) then
+            table.insert(almaz, i)
+        end
+    end
+    return almaz
+end
+
+almaz0 = Tab:AddDropdown({
+    Name = "Pick Item",
+    Default = "",
+    Options = {"database"},
+    Callback = function(Value)
+        getgenv().newValue = getrawnamebyrealname(Value)
+    end    
+})
+
+Tab:AddTextbox({
+    Name = "Filter Database",
+    Default = "",
+    TextDisappear = true,
+    Callback = function(Value)
+        eee = gettable(Value)
+        wait(1)
+        almaz0:Refresh(eee, true)
+    end	  
+})
+
+Tab:AddButton({
+    Name = "Open Crate",
+    Icon = "rbxassetid://4483345998",
+    Callback = function()
+        opencrate(getgenv().newValue)
+    end
+})
+Tab:AddParagraph("thanks for items", "dsc: amaz0.")
+
+OrionLib:Init()
